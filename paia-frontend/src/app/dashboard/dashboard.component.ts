@@ -1,9 +1,9 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChildren, QueryList, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChildren, QueryList, AfterViewInit, Renderer2, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { WidgetService } from '../services/widget.service';
 import { AuthService } from '../services/auth.service';
 import { WidgetComponent } from '../widget/widget.component';
@@ -24,7 +24,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   availableWidgets$: Observable<Widget[]>;
   dashboardConfig$: Observable<DashboardConfiguration>;
   widgets: { widget: Widget, instance: WidgetInstance }[] = [];
@@ -47,6 +47,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   draggedWidgetStartPos = { x: 0, y: 0 };
   resizedWidgetStartSize = { cols: 0, rows: 0 };
   
+  private subscriptions: Subscription[] = [];
+  
   @ViewChildren('widgetElement') widgetElements!: QueryList<ElementRef>;
 
   constructor(
@@ -66,12 +68,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.setupDragAndResize();
   }
+  
+  ngOnDestroy(): void {
+    // Alle Subscriptions aufräumen
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
 
   private loadDashboard(): void {
     this.widgetService.loadAvailableWidgets().subscribe();
-    this.widgetService.loadDashboardConfiguration().subscribe(config => {
+    
+    // Ein einziges Mal die initiale Konfiguration laden
+    this.widgetService.loadDashboardConfiguration().subscribe();
+    
+    // Auf Änderungen der Konfiguration reagieren
+    const configSub = this.dashboardConfig$.subscribe(config => {
       this.updateWidgets(config);
     });
+    this.subscriptions.push(configSub);
   }
 
   private updateWidgets(config: DashboardConfiguration): void {
@@ -80,8 +93,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       console.log('no config');
       return;
     }
-    console.log('config', config);
-    this.availableWidgets$.pipe(take(1)).subscribe(availableWidgets => {
+    
+    const availableSub = this.availableWidgets$.pipe(take(1)).subscribe(availableWidgets => {
       const widgetsMap: Record<string, Widget> = availableWidgets.reduce((map: Record<string, Widget>, widget: Widget) => {
         map[widget.id] = widget;
         return map;
@@ -95,7 +108,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       }).filter(item => item.widget); // Filter out widgets that don't exist
       
     });
-    console.log('widgets', this.widgets);
+    this.subscriptions.push(availableSub);
     
     // Nach dem Laden der Widgets muss ggf. Drag & Drop neu initialisiert werden
     setTimeout(() => {
@@ -104,7 +117,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   addWidget(widget: Widget): void {
-    console.log('addWidget', widget);
     this.widgetService.addWidget(widget.id);
   }
 
