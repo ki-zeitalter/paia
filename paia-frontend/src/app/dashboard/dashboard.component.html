@@ -24,11 +24,14 @@
   </div>
 
   <div class="dashboard-content">
-    <gridster [options]="options">
-      <gridster-item *ngFor="let item of widgets; let i = index"
-        [item]="createGridsterItem(item.instance.position)">
+    <div class="dashboard-grid">
+      <div class="widget-container"
+           *ngFor="let item of widgets; let i = index"
+           #widgetElement
+           [ngStyle]="getWidgetStyle(item.instance)">
         <app-widget [widget]="item.widget" [index]="i" (close)="removeWidget($event)"></app-widget>
-      </gridster-item>
-    </gridster>
+        <div class="resize-handle"></div>
+      </div>
+    </div>
   </div>
 </div>
