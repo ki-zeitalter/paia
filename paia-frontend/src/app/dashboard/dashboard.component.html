@@ -1,0 +1,39 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>PAIA Dashboard</h1>
+    <div class="dashboard-actions">
+      <div class="user-info" *ngIf="userInfo">
+        <img *ngIf="userInfo.picture" [src]="userInfo.picture" alt="Profilbild" class="user-avatar">
+        <span class="user-name">{{ userInfo.name }}</span>
+      </div>
+      <button mat-raised-button color="primary" [matMenuTriggerFor]="widgetMenu">
+        <mat-icon>add</mat-icon>
+        Widget hinzufügen
+      </button>
+      <mat-menu #widgetMenu="matMenu">
+        <button mat-menu-item *ngFor="let widget of availableWidgets$ | async" (click)="addWidget(widget)">
+          {{ widget.name }}
+        </button>
+      </mat-menu>
+      
+      <button mat-raised-button (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        Abmelden
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <gridster [options]="options">
+      <ng-container *ngFor="let item of widgets; let i = index">
+        <gridster-item 
+          [x]="item.instance.position.x"
+          [y]="item.instance.position.y" 
+          [cols]="item.instance.position.cols" 
+          [rows]="item.instance.position.rows">
+          <app-widget [widget]="item.widget" [index]="i" (close)="removeWidget($event)"></app-widget>
+        </gridster-item>
+      </ng-container>
+    </gridster>
+  </div>
+</div>

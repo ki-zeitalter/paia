@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="02-insert-default-widgets" author="paia">
+        <!-- Einfügen von Standard-Widgets -->
+        <insert tableName="available_widgets">
+            <column name="widget_id">clock-widget</column>
+            <column name="name">Uhr</column>
+            <column name="description">Zeigt die aktuelle Uhrzeit an</column>
+        </insert>
+        
+        <insert tableName="available_widgets">
+            <column name="widget_id">weather-widget</column>
+            <column name="name">Wetter</column>
+            <column name="description">Zeigt Wetterinformationen an</column>
+        </insert>
+        
+        <insert tableName="available_widgets">
+            <column name="widget_id">notes-widget</column>
+            <column name="name">Notizen</column>
+            <column name="description">Ein einfacher Notizblock</column>
+        </insert>
+        
+        <insert tableName="available_widgets">
+            <column name="widget_id">todo-widget</column>
+            <column name="name">Aufgaben</column>
+            <column name="description">Todo-Liste für Aufgaben</column>
+        </insert>
+        
+        <insert tableName="available_widgets">
+            <column name="widget_id">calendar-widget</column>
+            <column name="name">Kalender</column>
+            <column name="description">Zeigt einen Kalender an</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog> 
