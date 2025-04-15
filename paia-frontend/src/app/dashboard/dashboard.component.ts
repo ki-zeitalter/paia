@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { WidgetService } from '../services/widget.service';
 import { AuthService } from '../services/auth.service';
 import { WidgetComponent } from '../widget/widget.component';
-import { Widget, DashboardConfiguration, WidgetInstance } from '../models/widget';
+import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget } from '../models/widget';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -128,10 +128,12 @@ export class DashboardComponent implements OnInit {
           instance: instance
         };
       }).filter(item => item.widget); // Filter out widgets that don't exist
+      
     });
   }
 
   addWidget(widget: Widget): void {
+    console.log('addWidget', widget);
     this.widgetService.addWidget(widget.id);
   }
 

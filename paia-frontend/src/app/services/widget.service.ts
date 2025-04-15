@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { Widget, DashboardConfiguration, WidgetInstance } from '../models/widget';
+import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget } from '../models/widget';
 import { map, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -18,19 +18,31 @@ export class WidgetService {
 
   loadAvailableWidgets(): Observable<Widget[]> {
     return this.apiService.getAvailableWidgets().pipe(
-      tap(widgets => this.availableWidgetsSubject.next(widgets))
+      map(this.mapAvailableWidgetsToWidgets),
+      tap(widgets => this.availableWidgetsSubject.next(widgets)),
+      tap(widgets => console.log('availableWidgets', widgets))
     );
+  }
+
+  private mapAvailableWidgetsToWidgets(availableWidgets: AvailableWidget[]): Widget[] {
+    return availableWidgets.map(available => ({
+      id: available.widgetId,
+      name: available.name,
+      description: available.description
+    }));
   }
 
   loadDashboardConfiguration(): Observable<DashboardConfiguration> {
     return this.apiService.getDashboardConfiguration().pipe(
       map(config => {
+        console.log('loaded config 1', config);
         if (!config) {
           config = { widgets: [] };
         }
         if (!config.widgets) {
           config.widgets = [];
         }
+        console.log('loaded config 2', config);
         return config;
       }),
       tap(config => this.dashboardConfigurationSubject.next(config))
@@ -43,10 +55,15 @@ export class WidgetService {
   }
 
   addWidget(widgetId: string): void {
+    console.log('addWidget', widgetId);
     const widget = this.availableWidgetsSubject.getValue().find(w => w.id === widgetId);
-    if (!widget) return;
+    if (!widget){
+      console.error('Widget nicht gefunden');
+      return;
+    } 
 
     const config = this.dashboardConfigurationSubject.getValue();
+    console.log('current config', config);
     const widgetInstance: WidgetInstance = {
       widgetId: widget.id,
       position: {
