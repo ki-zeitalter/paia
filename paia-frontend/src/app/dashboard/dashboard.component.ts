@@ -111,6 +111,11 @@ export class DashboardComponent implements OnInit {
   }
 
   private updateWidgets(config: DashboardConfiguration): void {
+    if (!config || !config.widgets) {
+      this.widgets = [];
+      return;
+    }
+    
     this.availableWidgets$.pipe(take(1)).subscribe(availableWidgets => {
       const widgetsMap: Record<string, Widget> = availableWidgets.reduce((map: Record<string, Widget>, widget: Widget) => {
         map[widget.id] = widget;

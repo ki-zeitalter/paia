@@ -24,6 +24,15 @@ export class WidgetService {
 
   loadDashboardConfiguration(): Observable<DashboardConfiguration> {
     return this.apiService.getDashboardConfiguration().pipe(
+      map(config => {
+        if (!config) {
+          config = { widgets: [] };
+        }
+        if (!config.widgets) {
+          config.widgets = [];
+        }
+        return config;
+      }),
       tap(config => this.dashboardConfigurationSubject.next(config))
     );
   }
