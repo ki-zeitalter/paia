@@ -25,15 +25,10 @@
 
   <div class="dashboard-content">
     <gridster [options]="options">
-      <ng-container *ngFor="let item of widgets; let i = index">
-        <gridster-item 
-          [x]="item.instance.position.x"
-          [y]="item.instance.position.y" 
-          [cols]="item.instance.position.cols" 
-          [rows]="item.instance.position.rows">
-          <app-widget [widget]="item.widget" [index]="i" (close)="removeWidget($event)"></app-widget>
-        </gridster-item>
-      </ng-container>
+      <gridster-item *ngFor="let item of widgets; let i = index"
+        [item]="createGridsterItem(item.instance.position)">
+        <app-widget [widget]="item.widget" [index]="i" (close)="removeWidget($event)"></app-widget>
+      </gridster-item>
     </gridster>
   </div>
 </div>

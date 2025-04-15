@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { WidgetService } from '../services/widget.service';
 import { AuthService } from '../services/auth.service';
 import { WidgetComponent } from '../widget/widget.component';
-import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget } from '../models/widget';
+import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget, WidgetPosition } from '../models/widget';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -113,9 +113,10 @@ export class DashboardComponent implements OnInit {
   private updateWidgets(config: DashboardConfiguration): void {
     if (!config || !config.widgets) {
       this.widgets = [];
+      console.log('no config');
       return;
     }
-    
+    console.log('config', config);
     this.availableWidgets$.pipe(take(1)).subscribe(availableWidgets => {
       const widgetsMap: Record<string, Widget> = availableWidgets.reduce((map: Record<string, Widget>, widget: Widget) => {
         map[widget.id] = widget;
@@ -130,6 +131,7 @@ export class DashboardComponent implements OnInit {
       }).filter(item => item.widget); // Filter out widgets that don't exist
       
     });
+    console.log('widgets', this.widgets);
   }
 
   addWidget(widget: Widget): void {
@@ -156,6 +158,15 @@ export class DashboardComponent implements OnInit {
         rows: item.rows as number
       });
     }
+  }
+
+  createGridsterItem(position: WidgetPosition): GridsterItem {
+    return {
+      x: position.x,
+      y: position.y,
+      cols: position.cols,
+      rows: position.rows
+    };
   }
 
   logout(): void {
