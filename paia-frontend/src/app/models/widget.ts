@@ -7,6 +7,11 @@ export interface Widget {
   cols?: number;
   rows?: number;
   component?: string;
+  type?: WidgetType;
+}
+
+export enum WidgetType {
+  CLOCK = 'clock'
 }
 
 export interface AvailableWidget {

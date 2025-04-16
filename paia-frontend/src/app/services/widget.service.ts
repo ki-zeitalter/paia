@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget } from '../models/widget';
+import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget, WidgetType } from '../models/widget';
 import { map, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -25,11 +25,18 @@ export class WidgetService {
   }
 
   private mapAvailableWidgetsToWidgets(availableWidgets: AvailableWidget[]): Widget[] {
-    return availableWidgets.map(available => ({
+    const standardWidgets = availableWidgets.map(available => ({
       id: available.widgetId,
       name: available.name,
       description: available.description
     }));
+
+    return standardWidgets.map(widget => {
+      if (widget.id === 'clock-widget') {
+        return {...widget, type: WidgetType.CLOCK};
+      }
+      return widget;
+    });
   }
 
   loadDashboardConfiguration(): Observable<DashboardConfiguration> {
