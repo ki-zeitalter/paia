@@ -28,3 +28,14 @@ html, body {
   --text-color: rgba(0, 0, 0, 0.87);
   --disabled-color: rgba(0, 0, 0, 0.38);
 }
+
+/* Mat-Menu-Überschreibungen */
+.mat-mdc-menu-panel {
+  background-color: var(--card-color) !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-menu-content {
+  background-color: var(--card-color) !important;
+  opacity: 1 !important;
+}
