@@ -172,6 +172,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private startDrag(event: MouseEvent, element: HTMLElement, widgetIndex: number): void {
+    // Überprüfen, ob der Klick auf einem Button oder Icon im Header war
+    const target = event.target as HTMLElement;
+    if (target.closest('button') || target.closest('mat-icon')) {
+      return; // Drag nicht starten, wenn auf Button oder Icon geklickt wurde
+    }
+    
     event.preventDefault();
     
     this.isDragging = true;
