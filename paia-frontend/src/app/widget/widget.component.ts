@@ -1,11 +1,11 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ViewContainerRef, OnInit, ComponentRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule } from '@angular/material/button';
-import { Widget, WidgetType } from '../models/widget';
-import { WidgetRegistryService } from '../services/widget-registry.service';
+import {Component, ComponentRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewContainerRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import {Widget} from '../models/widget';
+import {WidgetRegistryService} from '../services/widget-registry.service';
 
 @Component({
   selector: 'app-widget',
@@ -19,7 +19,7 @@ export class WidgetComponent implements OnInit {
   @Input() index!: number;
   @Output() close = new EventEmitter<number>();
   @ViewChild('widgetContent', { read: ViewContainerRef, static: true }) widgetContentRef!: ViewContainerRef;
-  
+
   private componentRef: ComponentRef<any> | null = null;
 
   constructor(private widgetRegistry: WidgetRegistryService) {}
@@ -33,9 +33,6 @@ export class WidgetComponent implements OnInit {
   }
 
   private loadWidgetComponent(): void {
-    if (!this.widget.type) {
-      return;
-    }
 
     // Leere den Container, falls bereits eine Komponente geladen ist
     if (this.componentRef) {
@@ -44,7 +41,7 @@ export class WidgetComponent implements OnInit {
     }
 
     // Hole die passende Komponente aus der Registry
-    const component = this.widgetRegistry.getComponent(this.widget.type);
+    const component = this.widgetRegistry.getComponent(this.widget.id);
     if (component) {
       this.componentRef = this.widgetContentRef.createComponent(component);
       // Übergebe Widget-Daten an die Komponente, falls nötig

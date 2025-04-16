@@ -17,10 +17,10 @@
     <!-- Container für das dynamisch geladene Widget -->
     <div class="widget-content">
       <!-- Fallback-Anzeige, wenn kein Typ definiert ist -->
-      <ng-container *ngIf="!widget.type">
+      <ng-container *ngIf="!widget.id">
         <p>Widget {{ widget.id }}</p>
       </ng-container>
-      
+
       <!-- Container für dynamisch geladene Komponente -->
       <ng-container #widgetContent></ng-container>
     </div>

@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ApiService } from './api.service';
-import { Widget, DashboardConfiguration, WidgetInstance, AvailableWidget, WidgetType } from '../models/widget';
-import { map, tap } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {ApiService} from './api.service';
+import {AvailableWidget, DashboardConfiguration, Widget, WidgetInstance} from '../models/widget';
+import {map, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -25,31 +25,24 @@ export class WidgetService {
   }
 
   private mapAvailableWidgetsToWidgets(availableWidgets: AvailableWidget[]): Widget[] {
-    const standardWidgets = availableWidgets.map(available => ({
+    return availableWidgets.map(available => ({
       id: available.widgetId,
       name: available.name,
       description: available.description
     }));
-
-    return standardWidgets.map(widget => {
-      if (widget.id === 'clock-widget') {
-        return {...widget, type: WidgetType.CLOCK};
-      }
-      return widget;
-    });
   }
 
   loadDashboardConfiguration(): Observable<DashboardConfiguration> {
     return this.apiService.getDashboardConfiguration().pipe(
       map(config => {
-        console.log('loaded config 1', config);
+
         if (!config) {
           config = { widgets: [] };
         }
         if (!config.widgets) {
           config.widgets = [];
         }
-        console.log('loaded config 2', config);
+
         return config;
       }),
       tap(config => this.dashboardConfigurationSubject.next(config))
@@ -67,7 +60,7 @@ export class WidgetService {
     if (!widget){
       console.error('Widget nicht gefunden');
       return;
-    } 
+    }
 
     const config = this.dashboardConfigurationSubject.getValue();
     console.log('current config', config);
