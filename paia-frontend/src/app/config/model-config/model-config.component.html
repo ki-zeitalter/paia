@@ -1,0 +1,39 @@
+<div class="model-config-container">
+  <h2>Modell-Konfiguration</h2>
+  <p class="subtitle">Konfigurieren Sie die Sprachmodelle für die Nutzung in der Anwendung.</p>
+
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>Modelle werden geladen...</p>
+  </div>
+
+  <div class="error-container" *ngIf="hasError">
+    <mat-icon color="warn">error</mat-icon>
+    <p>Die Modelle konnten nicht geladen werden. Bitte versuchen Sie es später erneut.</p>
+    <button mat-raised-button color="primary" (click)="loadModels()">Erneut versuchen</button>
+  </div>
+
+  <div class="models-list" *ngIf="!isLoading && !hasError">
+    <mat-card class="model-card" *ngFor="let model of models">
+      <div class="model-info" (click)="openConfigDialog(model)">
+        <div class="model-icon">
+          <img [src]="model.iconUrl" [alt]="model.name + ' Icon'" *ngIf="model.iconUrl">
+          <mat-icon *ngIf="!model.iconUrl">smart_toy</mat-icon>
+        </div>
+        <div class="model-details">
+          <h3>{{ model.name }}</h3>
+          <div class="model-status">
+            <mat-icon [color]="model.configured ? 'primary' : 'warn'">
+              {{ model.configured ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+            <span>{{ model.configured ? 'Konfiguriert' : 'Nicht konfiguriert' }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <div class="no-models" *ngIf="models.length === 0">
+      <p>Keine Modelle verfügbar.</p>
+    </div>
+  </div>
+</div> 

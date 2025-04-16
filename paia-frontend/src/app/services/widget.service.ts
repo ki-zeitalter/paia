@@ -94,4 +94,8 @@ export class WidgetService {
       this.saveDashboardConfiguration().subscribe();
     }
   }
+
+  updateDashboardConfig(config: DashboardConfiguration): void {
+    this.dashboardConfigurationSubject.next(config);
+  }
 }

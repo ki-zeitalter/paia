@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ data.modelName }} konfigurieren</h2>
+
+<div mat-dialog-content>
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Konfiguration wird geladen...</p>
+  </div>
+  
+  <div class="error-container" *ngIf="error">
+    <p class="error-message">{{ error }}</p>
+  </div>
+  
+  <form [formGroup]="configForm" *ngIf="!loading">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>API-Schlüssel</mat-label>
+      <input matInput formControlName="apiKey" type="password" placeholder="Geben Sie Ihren API-Schlüssel ein">
+      <mat-error *ngIf="configForm.get('apiKey')?.hasError('required')">
+        API-Schlüssel ist erforderlich
+      </mat-error>
+      <mat-hint>Der API-Schlüssel wird verschlüsselt gespeichert.</mat-hint>
+    </mat-form-field>
+  </form>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    [disabled]="configForm.invalid || loading" 
+    (click)="onSubmit()">
+    Speichern
+  </button>
+</div> 

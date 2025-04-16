@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { RouterModule } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { WidgetService } from '../services/widget.service';
 import { AuthService } from '../services/auth.service';
@@ -18,6 +19,7 @@ import { take } from 'rxjs/operators';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
+    RouterModule,
     WidgetComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -199,36 +201,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   private onDrag(event: MouseEvent): void {
-    if (!this.isDragging || !this.currentDragElement || this.draggedWidgetIndex === -1) return;
+    if (!this.isDragging || this.draggedWidgetIndex === -1 || !this.currentDragElement) {
+      return;
+    }
     
-    // Berechne die Bewegung in Pixeln
     const deltaX = event.clientX - this.dragStartX;
     const deltaY = event.clientY - this.dragStartY;
     
-    // Berechne die neue Grid-Position (umgerechnet von Pixeln zu Grid-Zellen)
-    const deltaGridX = Math.round(deltaX / this.cellSize);
-    const deltaGridY = Math.round(deltaY / this.cellSize);
+    // Berechnung der Grid-Zellen-Veränderung
+    const gridDeltaX = Math.round(deltaX / this.cellSize);
+    const gridDeltaY = Math.round(deltaY / this.cellSize);
     
-    // Aktualisiere die Position des Widgets
-    const newX = Math.max(0, Math.min(this.gridCols - this.widgets[this.draggedWidgetIndex].instance.position.cols, 
-                               this.draggedWidgetStartPos.x + deltaGridX));
-    const newY = Math.max(0, Math.min(this.gridRows - this.widgets[this.draggedWidgetIndex].instance.position.rows, 
-                               this.draggedWidgetStartPos.y + deltaGridY));
+    // Neue Position berechnen
+    const newX = Math.max(0, Math.min(this.gridCols - 1, this.draggedWidgetStartPos.x + gridDeltaX));
+    const newY = Math.max(0, Math.min(this.gridRows - 1, this.draggedWidgetStartPos.y + gridDeltaY));
     
-    // Aktualisiere die Position im Modell
-    const updatedPosition = {
-      ...this.widgets[this.draggedWidgetIndex].instance.position,
-      x: newX,
-      y: newY
-    };
+    // Widget-Position aktualisieren
+    const widget = this.widgets[this.draggedWidgetIndex];
+    widget.instance.position.x = newX;
+    widget.instance.position.y = newY;
     
-    // UI aktualisieren
-    this.renderer.setStyle(this.currentDragElement, 'grid-column', `${updatedPosition.x + 1} / span ${updatedPosition.cols}`);
-    this.renderer.setStyle(this.currentDragElement, 'grid-row', `${updatedPosition.y + 1} / span ${updatedPosition.rows}`);
+    // View aktualisieren
+    this.updateWidgetPosition(widget.instance);
   }
   
   private startResize(event: MouseEvent, element: HTMLElement, widgetIndex: number): void {
     event.preventDefault();
+    event.stopPropagation();
     
     this.isResizing = true;
     this.currentResizeElement = element;
@@ -239,99 +238,95 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dragStartY = event.clientY;
     
     // Ursprüngliche Widget-Größe speichern
+    const widget = this.widgets[widgetIndex].instance;
     this.resizedWidgetStartSize = {
-      cols: this.widgets[widgetIndex].instance.position.cols,
-      rows: this.widgets[widgetIndex].instance.position.rows
+      cols: widget.position.cols,
+      rows: widget.position.rows
     };
     
-    // Styling während des Resizes
+    // Styling während des Resizings
     this.renderer.addClass(element, 'resizing');
   }
   
   private onResize(event: MouseEvent): void {
-    if (!this.isResizing || !this.currentResizeElement || this.resizedWidgetIndex === -1) return;
+    if (!this.isResizing || this.resizedWidgetIndex === -1 || !this.currentResizeElement) {
+      return;
+    }
     
-    // Berechne die Bewegung in Pixeln
     const deltaX = event.clientX - this.dragStartX;
     const deltaY = event.clientY - this.dragStartY;
     
-    // Berechne die neue Größe (umgerechnet von Pixeln zu Grid-Zellen)
-    const deltaGridCols = Math.round(deltaX / this.cellSize);
-    const deltaGridRows = Math.round(deltaY / this.cellSize);
+    // Berechnung der Grid-Zellen-Veränderung
+    const gridDeltaX = Math.round(deltaX / this.cellSize);
+    const gridDeltaY = Math.round(deltaY / this.cellSize);
     
-    // Aktualisiere die Größe des Widgets
-    const newCols = Math.max(1, Math.min(this.gridCols - this.widgets[this.resizedWidgetIndex].instance.position.x, 
-                                 this.resizedWidgetStartSize.cols + deltaGridCols));
-    const newRows = Math.max(1, Math.min(this.gridRows - this.widgets[this.resizedWidgetIndex].instance.position.y, 
-                                 this.resizedWidgetStartSize.rows + deltaGridRows));
+    // Neue Größe berechnen
+    const newCols = Math.max(1, Math.min(this.gridCols, this.resizedWidgetStartSize.cols + gridDeltaX));
+    const newRows = Math.max(1, Math.min(this.gridRows, this.resizedWidgetStartSize.rows + gridDeltaY));
     
-    // UI aktualisieren
-    this.renderer.setStyle(this.currentResizeElement, 'grid-column', 
-                           `${this.widgets[this.resizedWidgetIndex].instance.position.x + 1} / span ${newCols}`);
-    this.renderer.setStyle(this.currentResizeElement, 'grid-row', 
-                           `${this.widgets[this.resizedWidgetIndex].instance.position.y + 1} / span ${newRows}`);
+    // Widget-Größe aktualisieren
+    const widget = this.widgets[this.resizedWidgetIndex];
+    widget.instance.position.cols = newCols;
+    widget.instance.position.rows = newRows;
+    
+    // View aktualisieren
+    this.updateWidgetPosition(widget.instance);
   }
   
   private stopDragAndResize(): void {
-    // Drag beenden
-    if (this.isDragging && this.currentDragElement && this.draggedWidgetIndex !== -1) {
-      this.renderer.removeClass(this.currentDragElement, 'dragging');
-      
-      // Aktuelle Position aus dem Styling extrahieren
-      const gridColumn = this.currentDragElement.style.gridColumn;
-      const gridRow = this.currentDragElement.style.gridRow;
-      
-      // Grid-Position aus dem Style extrahieren (Format: "start / span width")
-      const colMatch = gridColumn.match(/(\d+)\s*\/\s*span\s*(\d+)/);
-      const rowMatch = gridRow.match(/(\d+)\s*\/\s*span\s*(\d+)/);
-      
-      if (colMatch && rowMatch) {
-        const x = parseInt(colMatch[1], 10) - 1; // Grid beginnt bei 1, unser Modell bei 0
-        const cols = parseInt(colMatch[2], 10);
-        const y = parseInt(rowMatch[1], 10) - 1;
-        const rows = parseInt(rowMatch[2], 10);
-        
-        // Position im Modell aktualisieren
-        this.widgetService.updateWidgetPosition(this.draggedWidgetIndex, {
-          x, y, cols, rows
-        });
+    if (this.isDragging) {
+      if (this.currentDragElement) {
+        this.renderer.removeClass(this.currentDragElement, 'dragging');
       }
+      this.isDragging = false;
+      this.currentDragElement = null;
+      this.saveDashboardState();
     }
     
-    // Resize beenden
-    if (this.isResizing && this.currentResizeElement && this.resizedWidgetIndex !== -1) {
-      this.renderer.removeClass(this.currentResizeElement, 'resizing');
-      
-      // Aktuelle Größe aus dem Styling extrahieren
-      const gridColumn = this.currentResizeElement.style.gridColumn;
-      const gridRow = this.currentResizeElement.style.gridRow;
-      
-      // Grid-Position aus dem Style extrahieren (Format: "start / span width")
-      const colMatch = gridColumn.match(/(\d+)\s*\/\s*span\s*(\d+)/);
-      const rowMatch = gridRow.match(/(\d+)\s*\/\s*span\s*(\d+)/);
-      
-      if (colMatch && rowMatch) {
-        const x = parseInt(colMatch[1], 10) - 1; // Grid beginnt bei 1, unser Modell bei 0
-        const cols = parseInt(colMatch[2], 10);
-        const y = parseInt(rowMatch[1], 10) - 1;
-        const rows = parseInt(rowMatch[2], 10);
-        
-        // Position im Modell aktualisieren
-        this.widgetService.updateWidgetPosition(this.resizedWidgetIndex, {
-          x, y, cols, rows
-        });
+    if (this.isResizing) {
+      if (this.currentResizeElement) {
+        this.renderer.removeClass(this.currentResizeElement, 'resizing');
       }
+      this.isResizing = false;
+      this.currentResizeElement = null;
+      this.saveDashboardState();
     }
-    
-    // Zurücksetzen der Drag & Resize Variablen
-    this.isDragging = false;
-    this.isResizing = false;
-    this.currentDragElement = null;
-    this.currentResizeElement = null;
-    this.draggedWidgetIndex = -1;
-    this.resizedWidgetIndex = -1;
   }
-
+  
+  private updateWidgetPosition(widget: WidgetInstance): void {
+    // Die View aktualisieren, ohne Change Detection auszulösen
+    // Dies ist nur eine visuelle Aktualisierung während des Drag & Drop
+    
+    // In einem realen Projekt könnten wir hier direkt DOM-Manipulationen vermeiden
+    // und stattdessen ChangeDetectorRef.detectChanges() verwenden, wenn nötig
+    
+    // Wir machen nichts in dieser Methode, sie ist nur ein Platzhalter
+  }
+  
+  private saveDashboardState(): void {
+    // Aktualisiere die Konfiguration im Dashboard-Konfigurationssubject 
+    const widgets = this.widgets.map(item => item.instance);
+    
+    // Den aktuellen Zustand aus dem Service holen
+    this.widgetService.dashboardConfiguration$.pipe(take(1)).subscribe(currentConfig => {
+      // Neue Konfiguration erstellen und im Service aktualisieren
+      const updatedConfig: DashboardConfiguration = { ...currentConfig, widgets };
+      
+      // Aktualisiere die Konfiguration im Service
+      this.widgetService.updateDashboardConfig(updatedConfig);
+      
+      // Speichere die Konfiguration mit der Methode ohne Parameter
+      this.widgetService.saveDashboardConfiguration().subscribe({
+        next: () => {
+          console.log('Dashboard state saved');
+        },
+        error: (error) => {
+          console.error('Error saving dashboard state:', error);
+        }
+      });
+    });
+  }
+  
   logout(): void {
     this.authService.logout();
   }

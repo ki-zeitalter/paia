@@ -12,6 +12,10 @@
           <mat-icon>add</mat-icon>
           Widget hinzufügen
         </button>
+        <button mat-menu-item [routerLink]="['/config']">
+          <mat-icon>settings</mat-icon>
+          Konfiguration
+        </button>
         <button mat-menu-item (click)="logout()">
           <mat-icon>exit_to_app</mat-icon>
           Abmelden

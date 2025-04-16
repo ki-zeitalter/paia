@@ -1,0 +1,26 @@
+<div class="config-container">
+  <div class="config-header">
+    <h1>PAIA Konfiguration</h1>
+    <div class="config-actions">
+      <button mat-button [routerLink]="'/dashboard'">
+        <mat-icon>arrow_back</mat-icon>
+        Zurück zum Dashboard
+      </button>
+    </div>
+  </div>
+
+  <div class="config-content">
+    <ng-container *ngIf="isChildRouteActive()">
+      <router-outlet></router-outlet>
+    </ng-container>
+
+    <div class="category-grid" *ngIf="!isChildRouteActive()">
+      <mat-card class="category-card" *ngFor="let category of categories" [routerLink]="category.route">
+        <mat-card-content>
+          <mat-icon class="category-icon">{{ category.icon }}</mat-icon>
+          <h2>{{ category.name }}</h2>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div> 

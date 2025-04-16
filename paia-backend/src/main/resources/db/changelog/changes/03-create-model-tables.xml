@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="03-create-llm-models-table" author="paia">
+        <createTable tableName="llm_models">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon_url" type="VARCHAR(512)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="03-create-user-model-configs-table" author="paia">
+        <createTable tableName="user_model_configs">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="model_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="api_key" type="VARCHAR(512)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addUniqueConstraint 
+            constraintName="uk_user_model"
+            tableName="user_model_configs"
+            columnNames="user_id, model_id"/>
+
+        <addForeignKeyConstraint 
+            baseTableName="user_model_configs"
+            baseColumnNames="model_id"
+            constraintName="fk_user_model_config_model_id" 
+            referencedTableName="llm_models"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="03-insert-default-models" author="paia">
+        <insert tableName="llm_models">
+            <column name="id" value="openai-gpt-4"/>
+            <column name="name" value="OpenAI GPT-4"/>
+            <column name="icon_url" value="/assets/icons/openai.png"/>
+            <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="llm_models">
+            <column name="id" value="anthropic-claude"/>
+            <column name="name" value="Anthropic Claude"/>
+            <column name="icon_url" value="/assets/icons/anthropic.png"/>
+            <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="llm_models">
+            <column name="id" value="mistral"/>
+            <column name="name" value="Mistral AI"/>
+            <column name="icon_url" value="/assets/icons/mistral.png"/>
+            <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog> 
