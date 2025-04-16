@@ -2,24 +2,27 @@
   <div class="dashboard-header">
     <h1>PAIA Dashboard</h1>
     <div class="dashboard-actions">
-      <div class="user-info" *ngIf="userInfo">
+      <div class="user-info" *ngIf="userInfo" [matMenuTriggerFor]="userMenu">
         <img *ngIf="userInfo.picture" [src]="userInfo.picture" alt="Profilbild" class="user-avatar">
         <span class="user-name">{{ userInfo.name }}</span>
       </div>
-      <button mat-raised-button color="primary" [matMenuTriggerFor]="widgetMenu">
-        <mat-icon>add</mat-icon>
-        Widget hinzufügen
-      </button>
+      
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item [matMenuTriggerFor]="widgetMenu">
+          <mat-icon>add</mat-icon>
+          Widget hinzufügen
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          Abmelden
+        </button>
+      </mat-menu>
+      
       <mat-menu #widgetMenu="matMenu">
         <button mat-menu-item *ngFor="let widget of availableWidgets$ | async" (click)="addWidget(widget)">
           {{ widget.name }}
         </button>
       </mat-menu>
-      
-      <button mat-raised-button (click)="logout()">
-        <mat-icon>exit_to_app</mat-icon>
-        Abmelden
-      </button>
     </div>
   </div>
 
