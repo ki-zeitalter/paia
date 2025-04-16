@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/models")
+@RequestMapping("/models")
 public class ModelConfigController {
 
     private final LlmModelService llmModelService;
@@ -56,7 +56,12 @@ public class ModelConfigController {
     // Endpunkte für Benutzer
     @GetMapping
     public ResponseEntity<List<ModelWithConfigDto>> getAllModelsForUser(Authentication authentication) {
-        String userId = authentication.getName();
+        // Temporäre Lösung: Festen Benutzer-ID verwenden für Testzwecke
+        String userId = "test-user"; 
+        // Falls Authentication vorhanden ist, diese verwenden
+        if (authentication != null) {
+            userId = authentication.getName();
+        }
         List<ModelWithConfigDto> models = llmModelService.getAllModelsWithConfigStatus(userId);
         return ResponseEntity.ok(models);
     }
