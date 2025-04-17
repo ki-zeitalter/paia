@@ -36,7 +36,7 @@
            *ngFor="let item of widgets; let i = index"
            #widgetElement
            [ngStyle]="getWidgetStyle(item.instance)">
-        <app-widget [widget]="item.widget" [index]="i" (close)="removeWidget($event)"></app-widget>
+        <app-widget [widget]="item.widget" [index]="i" [config]="item.instance.config" (close)="removeWidget($event)"></app-widget>
         <div class="resize-handle"></div>
       </div>
     </div>

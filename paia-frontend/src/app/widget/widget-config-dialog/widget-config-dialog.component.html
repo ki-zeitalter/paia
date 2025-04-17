@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Widget-Konfiguration: {{ data.widget.name }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="configForm">
+    <ng-container *ngIf="configParams.length > 0; else noConfig">
+      <div *ngFor="let param of configParams" class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ param.propertyDescription }}</mat-label>
+          <input matInput [formControlName]="param.propertyName" [required]="param.required">
+          <mat-error *ngIf="configForm.get(param.propertyName)?.hasError('required')">
+            Dieses Feld ist erforderlich
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </ng-container>
+    <ng-template #noConfig>
+      <p>Dieses Widget benötigt keine Konfiguration.</p>
+    </ng-template>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="configForm.invalid">Speichern</button>
+</mat-dialog-actions> 

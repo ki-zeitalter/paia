@@ -28,7 +28,8 @@ export class WidgetService {
     return availableWidgets.map(available => ({
       id: available.widgetId,
       name: available.name,
-      description: available.description
+      description: available.description,
+      configParameters: available.configParameters
     }));
   }
 
@@ -97,5 +98,17 @@ export class WidgetService {
 
   updateDashboardConfig(config: DashboardConfiguration): void {
     this.dashboardConfigurationSubject.next(config);
+  }
+
+  updateWidgetConfig(widgetIndex: number, config: {[key: string]: any}): void {
+    const dashboardConfig = this.dashboardConfigurationSubject.getValue();
+    
+    if (widgetIndex >= 0 && widgetIndex < dashboardConfig.widgets.length) {
+      dashboardConfig.widgets[widgetIndex].config = config;
+      
+      this.dashboardConfigurationSubject.next({ ...dashboardConfig });
+      
+      this.saveDashboardConfiguration().subscribe();
+    }
   }
 }

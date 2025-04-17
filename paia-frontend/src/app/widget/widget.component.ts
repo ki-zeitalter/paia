@@ -4,8 +4,11 @@ import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
+import {MatDialog} from '@angular/material/dialog';
 import {Widget} from '../models/widget';
 import {WidgetRegistryService} from '../services/widget-registry.service';
+import {WidgetConfigDialogComponent} from './widget-config-dialog/widget-config-dialog.component';
+import {WidgetService} from '../services/widget.service';
 
 @Component({
   selector: 'app-widget',
@@ -17,12 +20,17 @@ import {WidgetRegistryService} from '../services/widget-registry.service';
 export class WidgetComponent implements OnInit {
   @Input() widget!: Widget;
   @Input() index!: number;
+  @Input() config?: {[key: string]: any};
   @Output() close = new EventEmitter<number>();
   @ViewChild('widgetContent', { read: ViewContainerRef, static: true }) widgetContentRef!: ViewContainerRef;
 
   private componentRef: ComponentRef<any> | null = null;
 
-  constructor(private widgetRegistry: WidgetRegistryService) {}
+  constructor(
+    private widgetRegistry: WidgetRegistryService,
+    private widgetService: WidgetService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.loadWidgetComponent();
@@ -30,6 +38,29 @@ export class WidgetComponent implements OnInit {
 
   onClose(): void {
     this.close.emit(this.index);
+  }
+
+  onOpenConfigDialog(): void {
+    // Überprüfen, ob Widget Konfigurationsparameter hat
+    if (!this.widget.configParameters || this.widget.configParameters.length === 0) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(WidgetConfigDialogComponent, {
+      width: '500px',
+      data: {
+        widget: this.widget,
+        currentConfig: this.config
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.widgetService.updateWidgetConfig(this.index, result);
+        // Komponente neu laden mit aktualisierter Konfiguration
+        this.loadWidgetComponent();
+      }
+    });
   }
 
   private loadWidgetComponent(): void {
@@ -47,6 +78,11 @@ export class WidgetComponent implements OnInit {
       // Übergebe Widget-Daten an die Komponente, falls nötig
       if (this.componentRef.instance.widget === undefined) {
         this.componentRef.instance.widget = this.widget;
+      }
+      
+      // Übergebe Konfigurations-Daten, falls vorhanden
+      if (this.config && this.componentRef.instance.config === undefined) {
+        this.componentRef.instance.config = this.config;
       }
     }
   }

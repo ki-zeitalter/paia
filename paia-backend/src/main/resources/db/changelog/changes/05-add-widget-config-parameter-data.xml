@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="05-add-widget-config-parameter-data" author="paia">
+        <!-- Konfigurationsparameter für Weather-Widget -->
+        <insert tableName="widget_config_parameters">
+            <column name="widget_id">weather</column>
+            <column name="property_name">location</column>
+            <column name="property_description">Ort (z.B. Berlin, DE)</column>
+            <column name="required">true</column>
+        </insert>
+        
+        <insert tableName="widget_config_parameters">
+            <column name="widget_id">weather</column>
+            <column name="property_name">units</column>
+            <column name="property_description">Einheit (metric/imperial)</column>
+            <column name="required">false</column>
+        </insert>
+        
+        <!-- Konfigurationsparameter für Clock-Widget -->
+        <insert tableName="widget_config_parameters">
+            <column name="widget_id">clock</column>
+            <column name="property_name">timezone</column>
+            <column name="property_description">Zeitzone (z.B. Europe/Berlin)</column>
+            <column name="required">false</column>
+        </insert>
+        
+        <insert tableName="widget_config_parameters">
+            <column name="widget_id">clock</column>
+            <column name="property_name">format</column>
+            <column name="property_description">Zeitformat (12h/24h)</column>
+            <column name="required">false</column>
+        </insert>
+        
+        <!-- Konfigurationsparameter für Calendar-Widget -->
+        <insert tableName="widget_config_parameters">
+            <column name="widget_id">calendar</column>
+            <column name="property_name">calendarId</column>
+            <column name="property_description">ID des Kalenders</column>
+            <column name="required">true</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog> 

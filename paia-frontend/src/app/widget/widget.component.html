@@ -6,6 +6,10 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onOpenConfigDialog()" *ngIf="widget.configParameters?.length">
+          <mat-icon>settings</mat-icon>
+          <span>Konfigurieren</span>
+        </button>
         <button mat-menu-item (click)="onClose()">
           <mat-icon>close</mat-icon>
           <span>Schließen</span>
