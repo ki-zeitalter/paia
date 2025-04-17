@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="04-add-widget-config-parameters-table" author="sgruenheit">
+        <createTable tableName="widget_config_parameters">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="widget_id" type="VARCHAR(255)">
+                <constraints nullable="false" foreignKeyName="fk_widget_config_widget" references="available_widgets(widget_id)"/>
+            </column>
+            <column name="property_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="property_description" type="VARCHAR(1024)"/>
+            <column name="required" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Optional: Index für widget_id zur Verbesserung der Abfrageleistung -->
+        <createIndex indexName="idx_widget_config_widget_id" tableName="widget_config_parameters">
+            <column name="widget_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog> 

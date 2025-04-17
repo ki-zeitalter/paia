@@ -5,15 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WidgetDto {
-    private String widgetId;
-    private String name;
-    private String description;
-    private List<WidgetConfigParameterDto> configParameters;
+public class WidgetConfigParameterDto {
+    private String propertyName;
+    private String propertyDescription;
+    private boolean required;
 } 
