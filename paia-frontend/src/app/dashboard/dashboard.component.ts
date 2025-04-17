@@ -9,7 +9,7 @@ import { WidgetService } from '../services/widget.service';
 import { AuthService } from '../services/auth.service';
 import { WidgetComponent } from '../widget/widget.component';
 import { Widget, DashboardConfiguration, WidgetInstance, WidgetPosition } from '../models/widget';
-import { take } from 'rxjs/operators';
+import { take, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -77,10 +77,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadDashboard(): void {
-    this.widgetService.loadAvailableWidgets().subscribe();
+    // Die verfügbaren Widgets laden und dann erst die Dashboard-Konfiguration laden
+    const dashboardSub = this.widgetService.loadAvailableWidgets().pipe(
+      switchMap(() => this.widgetService.loadDashboardConfiguration())
+    ).subscribe();
     
-    // Ein einziges Mal die initiale Konfiguration laden
-    this.widgetService.loadDashboardConfiguration().subscribe();
+    this.subscriptions.push(dashboardSub);
     
     // Auf Änderungen der Konfiguration reagieren
     const configSub = this.dashboardConfig$.subscribe(config => {
