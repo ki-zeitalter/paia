@@ -1,1 +1,31 @@
-<p>chat works!</p>
+<deep-chat #deepChat
+           connect='{
+        "url": "http://localhost:8080/api/chat-stream",
+        "method": "POST",
+        "stream": true
+      }'
+           style="border-radius: 10px; width: 100%; height: 98%; display: block"
+           messageStyles='{
+        "default": {
+          "shared": {
+            "bubble": {
+              "maxWidth": "100%", "backgroundColor": "unset", "marginTop": "10px", "marginBottom": "10px", "fontSize": "1rem"}},
+          "user": {
+            "bubble": {
+              "marginLeft": "0px", "color": "black"}},
+          "ai": {
+            "outerContainer": {
+              "backgroundColor": "rgba(247,247,248)", "borderTop": "1px solid rgba(0,0,0,.1)", "borderBottom": "1px solid rgba(0,0,0,.1)"
+            }
+          }
+        }
+      }'
+           avatars='{
+        "default": {"styles": {"position": "left"}},
+        "ai": {"src": "ai.jpg"}
+      }'
+
+           inputAreaStyle='{"fontSize": "1rem"}'
+           textInput='{"placeholder": {"text": "Sprich mit mir, der AGI 🤖 deines Vertrauens 🤟"}}'
+></deep-chat>
+
