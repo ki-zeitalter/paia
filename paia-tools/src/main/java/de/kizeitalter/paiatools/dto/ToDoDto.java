@@ -1,5 +1,7 @@
-package de.kizeitalter.paiatools.model;
+package de.kizeitalter.paiatools.dto;
 
+import de.kizeitalter.paiatools.model.ToDoPriority;
+import de.kizeitalter.paiatools.model.ToDoStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +15,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ToDo {
+public class ToDoDto {
     private String name;
     private String description;
-    private TodDoStatus status;
+    private ToDoStatus status;
     private ToDoPriority priority;
 
     private ZonedDateTime dueDate;

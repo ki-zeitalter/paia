@@ -1,5 +1,5 @@
 package de.kizeitalter.paiatools.model;
 
-public enum TodDoStatus {
+public enum ToDoStatus {
     OPEN, DRAFT, IN_PROGRESS, DONE, ARCHIVED
 }
