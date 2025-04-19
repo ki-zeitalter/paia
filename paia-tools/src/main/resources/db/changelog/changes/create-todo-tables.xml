@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="1" author="paiatools">
+        <createTable tableName="todos">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="varchar(50)"/>
+            <column name="due_date" type="timestamp"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </createTable>
+
+        <createTable tableName="todo_reminders">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="todo_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_reminder_todo" references="todos(id)"/>
+            </column>
+            <column name="reminder_period" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp"/>
+        </createTable>
+
+        <createIndex indexName="idx_todo_status" tableName="todos">
+            <column name="status"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_todo_due_date" tableName="todos">
+            <column name="due_date"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_reminder_todo_id" tableName="todo_reminders">
+            <column name="todo_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog> 
