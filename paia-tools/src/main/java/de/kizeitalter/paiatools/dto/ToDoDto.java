@@ -21,7 +21,7 @@ public class ToDoDto {
     private ToDoStatus status;
     private ToDoPriority priority;
 
-    private ZonedDateTime dueDate;
+    private String dueDate;
 
-    private Set<Period> reminders;
+    //private Set<Period> reminders;
 }

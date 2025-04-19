@@ -1,0 +1,5 @@
+
+POST http://localhost:8081/mcp/message?sessionId=48340ee5-0af5-4f28-8767-0e6aa18a0ca5
+Content-Type: application/json
+
+{"jsonrpc":"2.0","id":6,"method":"tools/list"}

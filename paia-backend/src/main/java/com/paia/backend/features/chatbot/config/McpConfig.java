@@ -10,6 +10,7 @@ import dev.langchain4j.service.tool.ToolProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.util.List;
 
 @Configuration
@@ -18,6 +19,7 @@ public class McpConfig {
     public McpTransport mcpTransport() {
         return new HttpMcpTransport.Builder()
                 .sseUrl("http://localhost:8081/sse")
+                .timeout(Duration.ofMinutes(5))
                 .logRequests(true)
                 .logResponses(true)
                 .build();

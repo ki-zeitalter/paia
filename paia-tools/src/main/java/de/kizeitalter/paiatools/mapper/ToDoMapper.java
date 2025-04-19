@@ -21,10 +21,10 @@ public class ToDoMapper {
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .priority(entity.getPriority())
-                .dueDate(entity.getDueDate())
-                .reminders(entity.getReminders().stream()
-                        .map(ToDoReminder::getReminderPeriod)
-                        .collect(Collectors.toSet()))
+                //.dueDate(entity.getDueDate())
+               // .reminders(entity.getReminders().stream()
+               //         .map(ToDoReminder::getReminderPeriod)
+               //         .collect(Collectors.toSet()))
                 .build();
     }
     
@@ -38,19 +38,19 @@ public class ToDoMapper {
                 .description(dto.getDescription())
                 .status(dto.getStatus())
                 .priority(dto.getPriority())
-                .dueDate(dto.getDueDate())
+                //.dueDate(dto.getDueDate())
                 .build();
         
-        if (dto.getReminders() != null) {
-            todo.setReminders(dto.getReminders().stream()
-                    .map(period -> {
-                        ToDoReminder reminder = new ToDoReminder();
-                        reminder.setTodo(todo);
-                        reminder.setReminderPeriod(period);
-                        return reminder;
-                    })
-                    .collect(Collectors.toSet()));
-        }
+//        if (dto.getReminders() != null) {
+//            todo.setReminders(dto.getReminders().stream()
+//                    .map(period -> {
+//                        ToDoReminder reminder = new ToDoReminder();
+//                        reminder.setTodo(todo);
+//                        reminder.setReminderPeriod(period);
+//                        return reminder;
+//                    })
+//                    .collect(Collectors.toSet()));
+//        }
         
         return todo;
     }

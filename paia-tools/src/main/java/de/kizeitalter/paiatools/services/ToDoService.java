@@ -25,7 +25,7 @@ public class ToDoService {
     private final ToDoReminderRepository reminderRepository;
     private final ToDoMapper toDoMapper;
 
-    @Tool(description = "Delivers the tasks, to-dos for the user.")
+    @Tool(description = "Delivers the tasks (to-dos) for the user.")
     @Transactional(readOnly = true)
     public List<ToDoDto> getToDos() {
         log.info("getToDos");
@@ -38,6 +38,7 @@ public class ToDoService {
     }
     
     @Transactional
+    @Tool(description = "Creates a new task (aka to-do) for the user.")
     public ToDoDto createToDo(ToDoDto toDoDto) {
         log.info("Creating ToDo: {}", toDoDto.getName());
         ToDo todo = toDoMapper.toEntity(toDoDto);
