@@ -1,5 +1,6 @@
 package de.kizeitalter.paiatools.model;
 
+import de.kizeitalter.paiatools.converter.PeriodConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class ToDoReminder {
     private ToDo todo;
     
     @Column(nullable = false)
+    @Convert(converter = PeriodConverter.class)
     private Period reminderPeriod;
     
     private ZonedDateTime createdAt;
