@@ -13,7 +13,7 @@ public interface ToDoRepository extends JpaRepository<ToDo, Long> {
     
     List<ToDo> findByStatus(ToDoStatus status);
     
-    List<ToDo> findByStatusIn(List<ToDoStatus> statusList);
+    List<ToDo> findByUserNameAndStatusIn(String userName, List<ToDoStatus> statusList);
     
     List<ToDo> findByDueDateBefore(ZonedDateTime dateTime);
     

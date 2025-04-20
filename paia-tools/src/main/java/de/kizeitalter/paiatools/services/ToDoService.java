@@ -32,9 +32,9 @@ public class ToDoService {
 
     @Tool(description = "Delivers the tasks (to-dos) for the user.")
     @Transactional(readOnly = true)
-    public List<ToDoDto> getToDos() {
+    public List<ToDoDto> getToDos(@ToolParam(description = "The username") String userName) {
         log.info("getToDos");
-        List<ToDo> todos = toDoRepository.findByStatusIn(
+        List<ToDo> todos = toDoRepository.findByUserNameAndStatusIn(userName,
                 List.of(ToDoStatus.OPEN, ToDoStatus.IN_PROGRESS, ToDoStatus.DRAFT)
         );
         return todos.stream()
@@ -44,19 +44,20 @@ public class ToDoService {
 
     @Transactional
     @Tool(description = "Creates a new task (aka to-do) for the user.")
-    public ToDoDto createToDo(
-            @ToolParam(description = "Name of the task")
-            String name,
-            @ToolParam(description = "Description of the task. Use Markdown syntax for formatting.")
-            String description,
-            @ToolParam(description = "Due date with time in ISO 8601 format", required = false)
-            String dueDate,
-            @ToolParam(description = "Priority of the task", required = false)
-            ToDoPriority priority,
-            @ToolParam(description = "List of reminders in minutes", required = false)
-            List<Integer> reminders) {
+    public ToDoDto createToDo(@ToolParam(description = "The username") String userName,
+                              @ToolParam(description = "Name of the task")
+                              String name,
+                              @ToolParam(description = "Description of the task. Use Markdown syntax for formatting.")
+                              String description,
+                              @ToolParam(description = "Due date with time in ISO 8601 format", required = false)
+                              String dueDate,
+                              @ToolParam(description = "Priority of the task", required = false)
+                              ToDoPriority priority,
+                              @ToolParam(description = "List of reminders in minutes", required = false)
+                              List<Integer> reminders) {
         var toDoDto = ToDoDto
                 .builder()
+                .userName(userName)
                 .name(name)
                 .description(description)
                 .dueDate(dueDate)
@@ -114,6 +115,7 @@ public class ToDoService {
         if (existingToDo.isPresent()) {
             var toDoDto = ToDoDto
                     .builder()
+                    .userName(existingToDo.get().getUserName())
                     .name(Optional.ofNullable(name).orElse(existingToDo.get().getName()))
                     .description(Optional.ofNullable(description).orElse(existingToDo.get().getDescription()))
                     .dueDate(Optional.ofNullable(dueDate).orElse(getFormat(existingToDo.get().getDueDate())))
