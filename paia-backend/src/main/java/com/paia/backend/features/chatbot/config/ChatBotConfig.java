@@ -13,18 +13,15 @@ import org.springframework.context.annotation.Configuration;
 public class ChatBotConfig {
 
     @Bean
-    ChatBotAIService chatBotAIService(StreamingChatLanguageModel streamingChatLanguageModel, ToolProvider toolProvider, ChatMemory chatMemory) {
+    ChatBotAIService chatBotAIService(StreamingChatLanguageModel streamingChatLanguageModel, ToolProvider toolProvider) {
         return AiServices
                 .builder(ChatBotAIService.class)
                 .streamingChatLanguageModel(streamingChatLanguageModel)
                 .toolProvider(toolProvider)
-                .chatMemory(chatMemory)
+                //.chatMemory(chatMemory)
+                .chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(30))
                 .build();
     }
 
-    @Bean
-    public ChatMemory chatMemory() {
-        return MessageWindowChatMemory.builder().maxMessages(30).build();
-    }
 
 }
