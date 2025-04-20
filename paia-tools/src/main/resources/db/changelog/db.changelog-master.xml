@@ -7,5 +7,6 @@
 
     <include file="db/changelog/changes/create-todo-tables.xml"/>
     <include file="db/changelog/changes/update-reminder-column.xml"/>
+    <include file="db/changelog/changes/add-username-column.xml"/>
 
 </databaseChangeLog>

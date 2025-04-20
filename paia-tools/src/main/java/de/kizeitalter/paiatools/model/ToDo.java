@@ -28,6 +28,9 @@ public class ToDo {
     @Column(length = 1000)
     private String description;
     
+    @Column
+    private String userName;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ToDoStatus status;

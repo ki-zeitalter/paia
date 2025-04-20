@@ -19,6 +19,7 @@ public class ToDoDto {
     private Long id;
     private String name;
     private String description;
+    private String userName;
     private ToDoStatus status;
     private ToDoPriority priority;
 
