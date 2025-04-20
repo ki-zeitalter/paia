@@ -7,8 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "todos")
@@ -42,7 +42,7 @@ public class ToDo {
     private ZonedDateTime updatedAt;
     
     @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ToDoReminder> reminders = new HashSet<>();
+    private List<ToDoReminder> reminders = new ArrayList<>();
     
     @PrePersist
     protected void onCreate() {

@@ -5,7 +5,6 @@ import de.kizeitalter.paiatools.model.ToDo;
 import de.kizeitalter.paiatools.model.ToDoReminder;
 import org.springframework.stereotype.Component;
 
-import java.time.Period;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,9 +21,9 @@ public class ToDoMapper {
                 .status(entity.getStatus())
                 .priority(entity.getPriority())
                 //.dueDate(entity.getDueDate())
-               // .reminders(entity.getReminders().stream()
-               //         .map(ToDoReminder::getReminderPeriod)
-               //         .collect(Collectors.toSet()))
+                .reminders(entity.getReminders().stream()
+                        .map(ToDoReminder::getReminderMinutes)
+                        .collect(Collectors.toList()))
                 .build();
     }
     
@@ -41,16 +40,16 @@ public class ToDoMapper {
                 //.dueDate(dto.getDueDate())
                 .build();
         
-//        if (dto.getReminders() != null) {
-//            todo.setReminders(dto.getReminders().stream()
-//                    .map(period -> {
-//                        ToDoReminder reminder = new ToDoReminder();
-//                        reminder.setTodo(todo);
-//                        reminder.setReminderPeriod(period);
-//                        return reminder;
-//                    })
-//                    .collect(Collectors.toSet()));
-//        }
+        if (dto.getReminders() != null) {
+            todo.setReminders(dto.getReminders().stream()
+                    .map(minutes -> {
+                        ToDoReminder reminder = new ToDoReminder();
+                        reminder.setTodo(todo);
+                        reminder.setReminderMinutes(minutes);
+                        return reminder;
+                    })
+                    .collect(Collectors.toList()));
+        }
         
         return todo;
     }

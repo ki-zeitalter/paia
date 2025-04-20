@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Period;
 import java.time.ZonedDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,5 +23,5 @@ public class ToDoDto {
 
     private String dueDate;
 
-    //private Set<Period> reminders;
+    private List<Integer> reminders;
 }
