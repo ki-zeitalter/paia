@@ -30,7 +30,7 @@
             <column name="todo_id" type="bigint">
                 <constraints nullable="false" foreignKeyName="fk_reminder_todo" references="todos(id)"/>
             </column>
-            <column name="reminder_minutes" type="int">
+            <column name="reminder_period" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="created_at" type="timestamp"/>
