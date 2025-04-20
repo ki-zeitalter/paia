@@ -5,6 +5,9 @@ import de.kizeitalter.paiatools.model.ToDo;
 import de.kizeitalter.paiatools.model.ToDoReminder;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -14,32 +17,37 @@ public class ToDoMapper {
         if (entity == null) {
             return null;
         }
-        
+
         return ToDoDto.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .priority(entity.getPriority())
-                //.dueDate(entity.getDueDate())
+                .dueDate(getFormat(entity.getDueDate()))
                 .reminders(entity.getReminders().stream()
                         .map(ToDoReminder::getReminderMinutes)
                         .collect(Collectors.toList()))
                 .build();
     }
-    
+
+    private static String getFormat(ZonedDateTime dueDate) {
+        return Optional.ofNullable(dueDate).map(date -> date.format(DateTimeFormatter.ISO_DATE_TIME)).orElse(null);
+    }
+
     public ToDo toEntity(ToDoDto dto) {
         if (dto == null) {
             return null;
         }
-        
+
         ToDo todo = ToDo.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .status(dto.getStatus())
                 .priority(dto.getPriority())
-                //.dueDate(dto.getDueDate())
+                .dueDate(convertIsoDateTime(dto.getDueDate()))
                 .build();
-        
+
         if (dto.getReminders() != null) {
             todo.setReminders(dto.getReminders().stream()
                     .map(minutes -> {
@@ -50,7 +58,15 @@ public class ToDoMapper {
                     })
                     .collect(Collectors.toList()));
         }
-        
+
         return todo;
+    }
+
+    private ZonedDateTime convertIsoDateTime(String dueDate) {
+        if (dueDate == null) {
+            return null;
+        }
+
+        return ZonedDateTime.parse(dueDate, DateTimeFormatter.ISO_DATE_TIME);
     }
 } 

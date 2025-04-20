@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ToDoDto {
+    private Long id;
     private String name;
     private String description;
     private ToDoStatus status;
