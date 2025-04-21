@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.ki-zeitalter</groupId>
-	<artifactId>paia</artifactId>
+	<artifactId>paia-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>PAIA-Personal AI Assistant</name>
 	<description>PAIA-Personal AI Assistant</description>
