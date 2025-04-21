@@ -7,6 +7,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -18,10 +19,10 @@ public class CorsConfig {
         
         // Erlaube Anfragen von allen Ursprüngen in der Entwicklungsumgebung
         // In der Produktionsumgebung sollte dies auf spezifische Domains eingeschränkt werden
-        config.setAllowedOrigins(Arrays.asList("*"));
+        config.setAllowedOrigins(List.of("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-        config.setExposedHeaders(Arrays.asList("x-auth-token"));
+        config.setExposedHeaders(List.of("x-auth-token"));
         config.setAllowCredentials(false);
         config.setMaxAge(3600L);
         
