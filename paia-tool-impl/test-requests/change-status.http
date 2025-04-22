@@ -1,0 +1,5 @@
+### GET request to example server
+PATCH http://localhost:8082/api/todos/3/status
+Content-Type: application/json
+
+{"status": "DONE"}
