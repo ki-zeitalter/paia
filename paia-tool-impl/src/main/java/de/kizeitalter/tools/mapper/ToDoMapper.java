@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,10 +27,17 @@ public class ToDoMapper {
                 .status(entity.getStatus())
                 .priority(entity.getPriority())
                 .dueDate(getFormat(entity.getDueDate()))
-                .reminders(entity.getReminders().stream()
-                        .map(ToDoReminder::getReminderMinutes)
-                        .collect(Collectors.toList()))
+                .reminders(getReminders(entity))
                 .build();
+    }
+
+    private static List<Integer> getReminders(ToDo entity) {
+        if(entity.getReminders() == null) {
+            return List.of();
+        }
+        return entity.getReminders().stream()
+                .map(ToDoReminder::getReminderMinutes)
+                .collect(Collectors.toList());
     }
 
     private static String getFormat(ZonedDateTime dueDate) {
