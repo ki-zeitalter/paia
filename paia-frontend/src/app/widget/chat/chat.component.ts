@@ -1,8 +1,7 @@
 import {AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, ViewChild} from '@angular/core';
 import 'deep-chat';
-import { RequestDetails } from 'deep-chat/dist/types/interceptors';
-import { AuthService } from '../../services/auth.service';
-import { OAuthService } from 'angular-oauth2-oidc';
+import {RequestDetails} from 'deep-chat/dist/types/interceptors';
+import {OAuthService} from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-chat',
@@ -14,7 +13,9 @@ import { OAuthService } from 'angular-oauth2-oidc';
 export class ChatComponent implements AfterViewInit {
   private authService = inject(OAuthService);
 
-  @ViewChild('deepChat', { static: true }) chatElementRef!: ElementRef;
+  oauthService = inject(OAuthService);
+
+  @ViewChild('deepChat', {static: true}) chatElementRef!: ElementRef;
 
   ngAfterViewInit(): void {
     //this.chatElementRef = document.getElementById('meinChatElement') as DeepChat;
@@ -23,8 +24,8 @@ export class ChatComponent implements AfterViewInit {
     this.chatElementRef.nativeElement.requestInterceptor = async (requestDetails: RequestDetails) => {
       console.log('RequestInterceptor: Ursprüngliche Request Details:', requestDetails);
       try {
-        // Token vom Angular Service abrufen (angenommen, getToken gibt Observable<string | null> zurück)
-        const token = this.authService.getIdToken();
+        const localToken = localStorage.getItem('auth_token');
+        const token = localToken || this.oauthService.getIdToken();
 
         if (token) {
           requestDetails.headers = requestDetails.headers || {};
@@ -39,7 +40,7 @@ export class ChatComponent implements AfterViewInit {
       } catch (error) {
         console.error('Fehler beim Abrufen des Tokens im requestInterceptor:', error);
         // Anfrage bei Fehler abbrechen
-        return { error: 'Fehler bei der Token-Beschaffung.' };
+        return {error: 'Fehler bei der Token-Beschaffung.'};
       }
     };
   }
