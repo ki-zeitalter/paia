@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="06-update-user-table" author="paia">
+        <!-- Ändern der ID zu UUID mit auto-generated Wert -->
+        <addColumn tableName="users">
+            <column name="password_hash" type="varchar(255)" />
+            <column name="google_id" type="varchar(255)" />
+            <column name="last_login_at" type="timestamp" />
+        </addColumn>
+
+        <!-- Erstelle User Roles Tabelle -->
+        <createTable tableName="user_roles">
+            <column name="user_id" type="varchar(255)">
+                <constraints nullable="false" foreignKeyName="fk_user_roles_user_id" references="users(id)" />
+            </column>
+            <column name="roles" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog> 

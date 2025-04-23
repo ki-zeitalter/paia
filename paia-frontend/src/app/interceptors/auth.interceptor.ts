@@ -4,8 +4,16 @@ import { OAuthService } from 'angular-oauth2-oidc';
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const oauthService = inject(OAuthService);
-  // ID-Token statt Access-Token verwenden
-  const token = oauthService.getIdToken();
+  
+  // Bei Auth-Endpunkten kein Token hinzufügen
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/register') || req.url.includes('/auth/google')) {
+    console.log('Auth-Endpoint-Anfrage, kein Token nötig:', req.url);
+    return next(req);
+  }
+  
+  // Token direkt aus dem localStorage holen, statt den AuthService zu injizieren
+  const localToken = localStorage.getItem('auth_token');
+  const token = localToken || oauthService.getIdToken();
   
   // Prüfe, ob die Anfrage an unsere API geht
   const isApiRequest = req.url.includes('/api');
@@ -15,7 +23,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
       url: req.url,
       tokenVorhanden: !!token,
       tokenLänge: token.length,
-      tokenTyp: 'ID-Token'
+      tokenTyp: localToken ? 'JWT-Token (lokal)' : 'ID-Token (Google)'
     });
     
     // Validiere das Token-Format (minimale Prüfung)
@@ -27,16 +35,23 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
       return next(req); // Original-Request ohne Token senden
     }
     
+    // Stelle sicher, dass das Token nicht "Bearer" bereits enthält
+    const tokenValue = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+    
     const authReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`
+        Authorization: tokenValue
       }
     });
     
-    console.log('Neue Headers:', authReq.headers.keys());
+    console.log('Request mit Authorization-Header:', {
+      url: authReq.url,
+      headers: authReq.headers.keys()
+    });
     return next(authReq);
   } else {
-    if (isApiRequest) {
+    if (isApiRequest && !req.url.includes('/auth/')) {
+      // Nur warnen, wenn es keine Auth-Anfrage ist
       console.warn('Auth-Interceptor: Kein Token verfügbar für API-Anfrage', {
         url: req.url,
         tokenVorhanden: !!token

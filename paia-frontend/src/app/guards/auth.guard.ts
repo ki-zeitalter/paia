@@ -14,6 +14,15 @@ export const authGuard: CanActivateFn = (route, state) => {
     return of(true);
   }
   
+  // Prüfe direkt das localStorage auf ein gültiges Token (JWT-Format)
+  const localToken = localStorage.getItem('auth_token');
+  if (localToken && /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/.test(localToken)) {
+    console.log('Gültiges Token im localStorage gefunden, erlaube Navigation');
+    // Sorge dafür, dass der AuthService das Token kennt
+    authService.updateAuthStatus(true);
+    return of(true);
+  }
+  
   return authService.isAuthenticated$.pipe(
     take(1), // Nimm nur den ersten Wert, um Endlosschleifen zu vermeiden
     map(isAuthenticated => {

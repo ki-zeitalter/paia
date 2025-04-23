@@ -10,5 +10,6 @@
     <include file="db/changelog/changes/03-create-model-tables.xml"/>
     <include file="db/changelog/changes/04-add_widget_config_parameters_table.xml"/>
     <include file="db/changelog/changes/05-add-widget-config-parameter-data.xml"/>
+    <include file="db/changelog/changes/06-update-user-authentication.xml"/>
     
 </databaseChangeLog> 

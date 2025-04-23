@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {ApiService} from './api.service';
 import {AvailableWidget, DashboardConfiguration, Widget, WidgetInstance} from '../models/widget';
-import {map, tap} from 'rxjs/operators';
+import {map, tap, catchError} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,12 @@ export class WidgetService {
     return this.apiService.getAvailableWidgets().pipe(
       map(this.mapAvailableWidgetsToWidgets),
       tap(widgets => this.availableWidgetsSubject.next(widgets)),
-      tap(widgets => console.log('availableWidgets', widgets))
+      tap(widgets => console.log('Verfügbare Widgets geladen:', widgets.length)),
+      catchError(error => {
+        console.error('Fehler beim Laden der verfügbaren Widgets:', error);
+        // Bei Fehler behalten wir die bisherigen Widgets bei
+        return of(this.availableWidgetsSubject.getValue());
+      })
     );
   }
 
@@ -36,7 +41,6 @@ export class WidgetService {
   loadDashboardConfiguration(): Observable<DashboardConfiguration> {
     return this.apiService.getDashboardConfiguration().pipe(
       map(config => {
-
         if (!config) {
           config = { widgets: [] };
         }
@@ -46,7 +50,19 @@ export class WidgetService {
 
         return config;
       }),
-      tap(config => this.dashboardConfigurationSubject.next(config))
+      tap(config => {
+        console.log('Dashboard-Konfiguration geladen:', config.widgets.length, 'Widgets');
+        this.dashboardConfigurationSubject.next(config);
+      }),
+      catchError(error => {
+        console.error('Fehler beim Laden der Dashboard-Konfiguration:', error);
+        // Bei Fehler leere Konfiguration zurückgeben oder die bisherige beibehalten
+        const currentConfig = this.dashboardConfigurationSubject.getValue();
+        if (currentConfig.widgets.length > 0) {
+          return of(currentConfig);
+        }
+        return of({ widgets: [] });
+      })
     );
   }
 

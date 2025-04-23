@@ -33,7 +33,36 @@ public class DashboardController {
     }
 
     private User getUserFromAuthentication(Authentication authentication) {
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        return userService.getOrCreateUserFromJwt(jwt);
+        try {
+            if (authentication == null) {
+                throw new IllegalArgumentException("Authentication ist null");
+            }
+            
+            Object principal = authentication.getPrincipal();
+            
+            if (principal instanceof Jwt) {
+                Jwt jwt = (Jwt) principal;
+                System.out.println("JWT aus Authentication: " + jwt.getSubject());
+                return userService.getOrCreateUserFromJwt(jwt);
+            } else if (principal instanceof String) {
+                // Fallback, wenn Principal ein String ist (z.B. anonymousUser)
+                System.out.println("Principal ist ein String: " + principal);
+                return userService.findByEmail((String) principal)
+                    .orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden: " + principal));
+            } else if (principal instanceof org.springframework.security.core.userdetails.User) {
+                // Fallback für UserDetails
+                String username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+                System.out.println("Principal ist UserDetails mit Username: " + username);
+                return userService.findByEmail(username)
+                    .orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden: " + username));
+            } else {
+                System.err.println("Unbekannter Principal-Typ: " + (principal != null ? principal.getClass().getName() : "null"));
+                throw new IllegalArgumentException("Unbekannter Authentication-Typ");
+            }
+        } catch (Exception e) {
+            System.err.println("Fehler beim Laden des Benutzers aus der Authentifizierung: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Fehler bei der Authentifizierung", e);
+        }
     }
 } 

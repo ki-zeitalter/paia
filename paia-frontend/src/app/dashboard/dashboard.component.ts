@@ -4,12 +4,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { WidgetService } from '../services/widget.service';
 import { AuthService } from '../services/auth.service';
 import { WidgetComponent } from '../widget/widget.component';
 import { Widget, DashboardConfiguration, WidgetInstance, WidgetPosition } from '../models/widget';
-import { take, switchMap } from 'rxjs/operators';
+import { take, switchMap, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,10 +60,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     this.availableWidgets$ = this.widgetService.availableWidgets$;
     this.dashboardConfig$ = this.widgetService.dashboardConfiguration$;
-    this.userInfo = this.authService.identityClaims;
   }
 
   ngOnInit(): void {
+    // Benutzerinformationen laden
+    this.userInfo = this.authService.identityClaims;
+    console.log('Benutzerinformationen geladen:', this.userInfo);
+    
     this.loadDashboard();
   }
   
@@ -79,7 +82,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadDashboard(): void {
     // Die verfügbaren Widgets laden und dann erst die Dashboard-Konfiguration laden
     const dashboardSub = this.widgetService.loadAvailableWidgets().pipe(
-      switchMap(() => this.widgetService.loadDashboardConfiguration())
+      switchMap(() => this.widgetService.loadDashboardConfiguration()),
+      catchError(error => {
+        console.error('Fehler beim Laden des Dashboards:', error);
+        
+        // Bei 401 Unauthorized zurück zur Login-Seite
+        if (error.status === 401) {
+          console.warn('Nicht autorisiert, Token könnte abgelaufen sein. Leite zur Login-Seite weiter...');
+          localStorage.removeItem('auth_token'); // Token entfernen, da es ungültig ist
+          this.authService.logout(); // Vollständigen Logout durchführen
+        }
+        
+        return of(null);
+      })
     ).subscribe();
     
     this.subscriptions.push(dashboardSub);

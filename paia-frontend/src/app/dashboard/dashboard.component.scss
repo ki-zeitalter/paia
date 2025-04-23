@@ -43,6 +43,13 @@
       object-fit: cover;
     }
 
+    mat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 32px;
+      color: #757575;
+    }
+
     .user-name {
       font-weight: 500;
     }
@@ -103,6 +110,38 @@
   cursor: nwse-resize;
   background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
   z-index: 10;
+}
+
+.menu-info {
+  padding: 8px 16px;
+  color: #757575;
+  font-style: italic;
+}
+
+.empty-dashboard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #757575;
+  
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin-bottom: 24px;
+    font-size: 16px;
+  }
+  
+  button {
+    margin: 0 auto;
+  }
 }
 
 // Anpassungen für mobile Geräte
